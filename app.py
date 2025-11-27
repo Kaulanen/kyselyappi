@@ -3,6 +3,7 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+# Viestit vaihtoehdoille
 messages_A = [
     "Kiitos! Valitsit Vaihtoehto A.",
     "Hienoa, että pidät A:sta!",
@@ -35,4 +36,4 @@ def index():
     return render_template("index.html", message=message)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
