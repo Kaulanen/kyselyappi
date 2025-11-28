@@ -1,47 +1,107 @@
-
 <!DOCTYPE html>
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mielipidekysely</title>
+
     <!-- Favicon -->
-    {{ url_for(
-    <!-- Bootstrap CSS -->
-    https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <!-- Oma CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="card shadow-sm">
-            <div class="card-header text-center bg-primary text-white">
-                <h2>Mielipidekysely</h2>
-            </div>
-            <div class="card-body">
-                <form method="post" class="text-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="vote" value="A" id="optionA" required>
-                        <label class="form-check-label" for="optionA">
-                            Vaihtoehto A
-                        </label>
-                    </div>
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="radio" name="vote" value="B" id="optionB">
-                        <label class="form-check-label" for="optionB">
-                            Vaihtoehto B
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-success mt-4">Lähetä</button>
-                </form>
-                {% if message %}
-                    <div class="alert alert-info mt-4" role="alert">
-                        {{ message }}
-                    </div>
-                {% endif %}
-            </div>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" id="logo">
+        <h1>Mielipidekysely</h1>
+    </header>
+
+    <p class="kysymys">Oliko Prodonetin tukipalvelut mielestäsi toimivat?</p>
+
+    <div class="option">
+        <input type="radio" id="optionA" name="choice" onclick="confirmSelection()">
+        <label for="optionA">Kyllä! Nautin asiakaspalvelusta!</label>
+    </div>
+
+    <div class="option">
+        <input type="radio" id="optionB" name="choice" onclick="trickUser()">
+        <label for="optionB">Ei.</label>
+    </div>
+
+    <button class="reset-btn">
+        Tyhjennä valinta
+    </button>
+
+    <div id="message" class="message"></div>
+    <!-- Varmistusmodal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <p id="confirmMessage">Varmistusviesti tähän</p>
+            <button id="confirmYes" class="btn yes">Kyllä</button>
+            <button id="confirmNo" class="btn no">Ei</button>
         </div>
     </div>
-    <!-- Bootstrap JS -->
-    https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js</script>
+
+    <script>
+        // Reset-painike
+        document.querySelector('.reset-btn').addEventListener('click', resetSelection);
+
+        async function confirmSelection() {
+            const messages = [
+                "Oletko varma tästä valinnasta?",
+                "Tämä on tärkeä päätös. Haluatko jatkaa?",
+                "Oletko edelleen samaa mieltä?",
+                "Viimeinen varmistus: jatketaanko?",
+                "Sinut ohjataan nyt sivulle www.pornhub.com. Haluatko jatkaa?"
+            ];
+
+            for (let msg of messages) {
+                const ok = await showConfirm(msg);
+                if (!ok) {
+                    document.getElementById('optionA').checked = false;
+                    document.getElementById('message').textContent = "Valinta peruutettu.";
+                    return;
+                }
+            }
+
+            document.getElementById('message').textContent =
+                "Kiitos että olet tätä mieltä (Vaihtoehto A)";
+        }
+        function showConfirm(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("confirmModal");
+                const msgBox = document.getElementById("confirmMessage");
+                const yesBtn = document.getElementById("confirmYes");
+                const noBtn = document.getElementById("confirmNo");
+
+                msgBox.textContent = message;
+                modal.style.display = "flex";
+
+                yesBtn.onclick = () => {
+                    modal.style.display = "none";
+                    resolve(true);
+                };
+
+                noBtn.onclick = () => {
+                    modal.style.display = "none";
+                    resolve(false);
+                };
+            });
+        }
+
+        function trickUser() {
+            document.getElementById('optionB').checked = false;
+            document.getElementById('optionA').checked = true;
+            document.getElementById('message').textContent =
+                "Kiitos, että annat täydet pisteet palvelullemme! Arvostamme mielipidettäsi.";
+        }
+
+        function resetSelection() {
+            document.getElementById('optionA').checked = false;
+            document.getElementById('optionB').checked = false;
+            document.getElementById('message').textContent = "Valinta tyhjennetty.";            
+        }
+    </script>
 </body>
 </html>
-    
